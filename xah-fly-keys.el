@@ -741,7 +741,7 @@ Version: 2025-02-05"
         (warn "There was unmatched bracket: no paired opening bracket on left of cursor")
         (delete-char -1))
        ;; delete just the brackets
-       (BracketOnly
+       ((not BracketOnly)
         (let ((xp0 (point)) xbeg)
           (forward-sexp -1)
           (while (looking-at "\\s'") (forward-char))
@@ -3419,8 +3419,9 @@ Version: 2024-04-22"
 
        ("'" . xah-fill-or-unfill)
 
-       (", t" . xref-find-definitions)
-       (", n" . xref-pop-marker-stack)
+       (", h" . xref-find-references)
+       (", t" . my-jump-to-wrapper)
+       (", n" . my-jump-back-wrapper)
 
        ;; - / ; = [
        ("\\" . toggle-input-method)
@@ -3437,9 +3438,9 @@ Version: 2024-04-22"
        ("b" . end-of-buffer)
 
        ("c ," . xah-open-in-external-app)
-       ("c ." . find-file)
+       ("c ." . ken_nc/affe-find)
        ("c c" . bookmark-bmenu-list)
-       ("c e" . ibuffer)
+       ("c e" . ken_nc/ibuffer)
        ("c f" . xah-open-recently-closed)
        ("c g" . xah-open-in-terminal)
        ("c h" . recentf-open-files)
@@ -3541,9 +3542,13 @@ Version: 2024-04-22"
 
        ("i" . kill-line)
        ("j" . xah-copy-all-or-region)
-       ("k" . xah-show-kill-ring)
+       ("k o" . dired-sort-size)
+       ("k ." . dired-sort-extension)
+       ("k j" . dired-sort-ctime)
+       ("k u" . dired-sort-utime)
+       ("k p" . dired-sort-name)
 
-       ("l" . recenter-top-bottom)
+       ("l" . git-timemachine-toggle)
 
        ("m" . dired-jump)
 
@@ -3593,9 +3598,20 @@ Version: 2024-04-22"
        ("n y" . toggle-truncate-lines)
        ("n z" . abort-recursive-edit)
 
-       ("o" . exchange-point-and-mark)
+       ("o u" . crux-transpose-windows)
+       ("o p" . crux-rename-file-and-buffer)
+       ("o e" . crux-delete-file-and-buffer)
+       ("o o" . crux-sudo-edit)
+       ("o i" . ken_nc/consult-ripgrep)
+       ("o b" . 0xc-live-convert)
+       ("o h" . quick-calc)
+
        ("p" . query-replace)
-       ("q" . xah-cut-all-or-region)
+
+       ("q h" . dumb-jump-go-other-window)
+       ("q t" . dumb-jump-go-prefer-external-other-window)
+       ("q n" . dumb-jump-go-prompt)
+       ("q s" . dumb-jump-quick-look)
 
        ;; roughly text replacement related
 
@@ -3659,7 +3675,7 @@ Version: 2024-04-22"
        ("r y" . delete-whitespace-rectangle)
        ("r z" . nil)
 
-       ("s" . save-buffer)
+       ("s" . ken_nc/save-buffer-dwim)
 
        ;; most frequently used
        ("t <up>"  . xah-move-block-up)
@@ -3677,7 +3693,7 @@ Version: 2024-04-22"
        ("t d" . mark-defun)
        ("t e" . list-matching-lines)
        ("t f" . move-to-column)
-       ("t g" . goto-line)
+       ("t g" . consult-goto-line)
        ("t h" . repeat-complex-command)
        ("t i" . delete-non-matching-lines)
        ("t j" . copy-to-register)
@@ -3697,7 +3713,7 @@ Version: 2024-04-22"
        ("t x" . xah-title-case-region-or-line)
        ("t y" . delete-duplicate-lines)
        ("t z" . nil)
-       ("u" . switch-to-buffer)
+       ("u" . consult-buffer)
        ("v" . universal-argument)
 
        ;; dangerous map. run program, delete file, etc
@@ -3711,7 +3727,7 @@ Version: 2024-04-22"
        ("w w" . delete-frame)
        ("w j" . xah-run-current-file)
 
-       ("x" . xah-toggle-previous-letter-case)
+       ("x" . ken_nc/pop-local-mark-ring)
        ;; y
 
        ;; vc command keys subject to change. need a frequency stat of the commands.
@@ -3745,13 +3761,15 @@ Version: 2024-04-22"
        ("'" . xah-reformat-lines)
        ("," . xah-shrink-whitespaces)
        ("-" . delete-other-windows)
-       ("." . backward-kill-word)
+       ("." . ken_nc/backward-delete-word)
        ("/" . hippie-expand)
        (";" . xah-comment-dwim)
        ("[" . split-window-below)
        ("\\" . xah-cycle-hyphen-lowline-space)
        ("]" . split-window-right)
        ("`" . other-frame)
+       ;; ("%" . ken_nc/goto-match-paren)
+       ("%" . xah-goto-matching-bracket)
 
        ;; ("1" . nil)
        ;; ("2" . nil)
@@ -3761,16 +3779,16 @@ Version: 2024-04-22"
        ("6" . xah-select-block)
        ("7" . xah-select-line)
        ("8" . xah-extend-selection)
-       ("9" . xah-select-text-in-quote)
+       ("9" . er/expand-region)
        ("0" . xah-pop-local-mark-ring)
 
-       ("a" . execute-extended-command)
+       ("a" . ken_nc/M-x)
        ("b" . isearch-forward)
        ("c" . previous-line)
-       ("d" . xah-beginning-of-line-or-block)
+       ("d" . ken_nc/beginning-of-line-or-block)
        ("e" . xah-smart-delete)
        ("f" . undo)
-       ("g" . backward-word)
+       ("g" . ken_nc/backward-word)
        ("h" . backward-char)
        ("i" . xah-delete-current-text-block)
        ("j" . xah-copy-line-or-region)
@@ -3779,18 +3797,18 @@ Version: 2024-04-22"
        ("l" . xah-insert-space-before)
        ("m" . xah-backward-left-bracket)
        ("n" . forward-char)
-       ("o" . open-line)
-       ("p" . kill-word)
+       ("o" . ken_nc/dwim-open-line)
+       ("p" . ken_nc/delete-word)
        ("q" . xah-cut-line-or-region)
-       ("r" . forward-word)
-       ("s" . xah-end-of-line-or-block)
+       ("r" . ken_nc/forward-word)
+       ("s" . ken_nc/end-of-line-or-block)
        ("t" . next-line)
        ("u" . xah-fly-insert-mode-activate)
-       ("v" . xah-forward-right-bracket)
+       ("v" . ken_nc/go-to-char-backwards)
        ("w" . xah-next-window-or-frame)
        ("x" . xah-toggle-letter-case)
        ("y" . set-mark-command)
-       ("z" . xah-goto-matching-bracket)))
+       ("z" . ken_nc/go-to-char)))
 
     ;;
     ))
