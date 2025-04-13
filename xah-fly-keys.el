@@ -3438,7 +3438,7 @@ Version: 2024-04-22"
        ("b" . end-of-buffer)
 
        ("c ," . xah-open-in-external-app)
-       ("c ." . ken_nc/affe-find)
+       ("c ." . ken_nc/consult-find)
        ("c c" . bookmark-bmenu-list)
        ("c e" . ken_nc/ibuffer)
        ("c f" . xah-open-recently-closed)
